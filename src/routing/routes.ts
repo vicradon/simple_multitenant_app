@@ -11,7 +11,9 @@ router.post("/register", async (req, res) => {
     const result = await AuthService.register(email, password);
     res.json(result);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    const msg = (err as unknown as Error).message;
+
+    res.status(400).json({ error: msg });
   }
 });
 
@@ -22,7 +24,8 @@ router.post("/login", async (req, res) => {
     const result = await AuthService.login(email, password);
     res.json(result);
   } catch (err) {
-    res.status(401).json({ error: err.message });
+    const msg = (err as unknown as Error).message;
+    res.status(401).json({ error: msg });
   }
 });
 
@@ -32,7 +35,8 @@ router.get("/records", AuthService.authMiddleware, async (req, res) => {
     const records = await MedicalRecordService.getRecords(req.db);
     res.json(records);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    const msg = (err as unknown as Error).message;
+    res.status(500).json({ error: msg });
   }
 });
 
@@ -42,7 +46,8 @@ router.post("/records", AuthService.authMiddleware, async (req, res) => {
     const record = await MedicalRecordService.createRecord(req.db, req.body);
     res.json(record);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    const msg = (err as unknown as Error).message;
+    res.status(500).json({ error: msg });
   }
 });
 

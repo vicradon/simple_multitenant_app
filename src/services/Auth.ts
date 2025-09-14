@@ -2,17 +2,18 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import env from "../utils/env.js";
 import DbService from "./Database.js";
-
+import TenantDataSourceManager from "./Datasource/TenantDataSourceManager.js";
+import type { Request, Response } from "express";
 const JWT_SECRET = env.jwt_secret;
 
 class AuthService {
-  extractDomain(email) {
+  extractDomain(email: string) {
     const parts = email.split("@");
     if (parts.length !== 2) throw new Error("Invalid email format");
     return parts[1];
   }
 
-  async register(email, password) {
+  async register(email: string, password: string) {
     const domain = this.extractDomain(email);
 
     const { rows } = await DbService.identityDb.query(
@@ -26,15 +27,15 @@ class AuthService {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    await pool.query(
-      "INSERT INTO users (email, password) VALUES ($1, $2)",
-      [email, hashed]
-    );
+    await pool.query("INSERT INTO users (email, password) VALUES ($1, $2)", [
+      email,
+      hashed,
+    ]);
 
     return { message: "User registered" };
   }
 
-  async login(email, password) {
+  async login(email: string, password: string) {
     const domain = this.extractDomain(email);
 
     const { rows } = await DbService.identityDb.query(
@@ -65,7 +66,7 @@ class AuthService {
     return { token };
   }
 
-  async authMiddleware(req, res, next) {
+  async authMiddleware(req: Request, res: Response, next) {
     const header = req.headers.authorization;
     if (!header) return res.status(401).json({ error: "Missing token" });
 
@@ -73,7 +74,7 @@ class AuthService {
       const token = header.split(" ")[1];
       const payload = jwt.verify(token, JWT_SECRET);
       req.user = payload;
-      req.db = await DbService.getTenantPool(payload.tenantId);
+      req.db = await TenantDataSourceManager.getDataSource(payload.tenantId);
       next();
     } catch (err) {
       return res.status(401).json({ error: "Invalid token" });
