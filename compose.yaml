@@ -1,0 +1,41 @@
+services:
+  identity_db:
+    image: postgres:16
+    container_name: identity_db
+    environment:
+      POSTGRES_DB: hospital_identity_db
+      POSTGRES_USER: hospital_identity_db
+      POSTGRES_PASSWORD: hospital_identity_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - identity_db_data:/var/lib/postgresql/data
+
+  hospital_a_db:
+    image: postgres:16
+    container_name: hospital_a_db
+    environment:
+      POSTGRES_DB: hospital_a
+      POSTGRES_USER: hospital_a
+      POSTGRES_PASSWORD: hospital_a
+    ports:
+      - "5433:5432"
+    volumes:
+      - hospital_a_db_data:/var/lib/postgresql/data
+
+  hospital_b_db:
+    image: postgres:16
+    container_name: hospital_b_db
+    environment:
+      POSTGRES_DB: hospital_b
+      POSTGRES_USER: hospital_b
+      POSTGRES_PASSWORD: hospital_b
+    ports:
+      - "5434:5432"
+    volumes:
+      - hospital_b_db_data:/var/lib/postgresql/data
+
+volumes:
+  identity_db_data:
+  hospital_a_db_data:
+  hospital_b_db_data:
