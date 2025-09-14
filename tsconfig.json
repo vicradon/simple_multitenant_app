@@ -4,6 +4,10 @@
     "rootDir": "src",
     "esModuleInterop": true,
     "strict": true,
-    "types": ["node"]
-  }
+    "types": ["node", "express"],
+        "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "downlevelIteration": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }

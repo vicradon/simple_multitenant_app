@@ -1,15 +1,29 @@
-// ./services/TenantDataSourceManager.js
 import { DataSource } from "typeorm";
-import { User } from "../../entities/User.js";
-import { MedicalRecord } from "../../entities/MedicalRecord.js";
-import { IdentityDataSource } from "./IdentityDatasource.js";
+import { User } from "../../entities/User";
+import { MedicalRecord } from "../../entities/MedicalRecord";
+import { IdentityDataSource } from "./IdentityDatasource";
 
 class TenantDataSourceManager {
+  dataSources: Map<string, DataSource>;
+
   constructor() {
     this.dataSources = new Map();
   }
 
-  async getDataSource(tenantId) {
+  async initDataSource(connString: string): Promise<DataSource | null> {
+    if (!connString) return null;
+
+    const dataSource = new DataSource({
+      type: "postgres",
+      url: connString,
+      entities: [User, MedicalRecord],
+      synchronize: true,
+    });
+
+    return await dataSource.initialize();
+  }
+
+  async getDataSource(tenantId: string) {
     if (this.dataSources.has(tenantId)) return this.dataSources.get(tenantId);
 
     const tenantRepo = IdentityDataSource.getRepository("Tenant");

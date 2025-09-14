@@ -1,9 +1,10 @@
-import pkg from "pg";
-import env from "../utils/env.js";
-
-const { Pool } = pkg;
+import {Pool} from "pg";
+import env from "../utils/env";
 
 class DbService {
+  identityDb: Pool;
+  tenantPools: Map<string, Pool>;
+
   constructor() {
     this.identityDb = new Pool({
       connectionString: env.db_url_identity,
@@ -11,19 +12,20 @@ class DbService {
     this.tenantPools = new Map();
   }
 
-  async testTenantConnection(pool) {
+  async testTenantConnection(pool: Pool): Promise<void> {
     try {
       await pool.query("SELECT 1");
       console.log("Tenant DB connection verified ✅");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Tenant DB connection failed ❌", err.message);
       throw new Error("Unable to connect to tenant database");
     }
   }
 
-  async getTenantPool(tenantId) {
-    if (this.tenantPools.has(tenantId)) {
-      return this.tenantPools.get(tenantId);
+  async getTenantPool(tenantId: string): Promise<Pool> {
+    const existingPool = this.tenantPools.get(tenantId);
+    if (existingPool) {
+      return existingPool;
     }
 
     const { rows } = await this.identityDb.query(
@@ -47,12 +49,13 @@ class DbService {
     return pool;
   }
 
-  async closeAllPools() {
+  async closeAllPools(): Promise<void> {
     await this.identityDb.end();
 
     for (const pool of this.tenantPools.values()) {
       await pool.end();
     }
+
     this.tenantPools.clear();
     console.log("All DB pools closed ✅");
   }

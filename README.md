@@ -2,9 +2,20 @@
 
 An application supporting "multiple dbs, one app" style of multi-tenancy.
 
+View the TypeScript version [here](https://github.com/vicradon/simple_multitenant_app/tree/typeorm_version). 
+
 ## Database Diagram
 
 ![DB Diagram](./docs/db_diagram.png)
+
+
+## Running
+
+1. Clone the repo
+1. Create the .env file (cp .env .env.example)
+1. Install dependencies
+1. Create the databases (three dbs required)
+1. Seed the DBs (pnpm db:seed)
 
 ## Request flow
 

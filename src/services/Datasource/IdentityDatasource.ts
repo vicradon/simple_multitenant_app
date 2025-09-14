@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
-import env from "../../utils/env.js";
-import { Tenant } from "../../entities/Tenant.js";
+import env from "../../utils/env";
+import { Tenant } from "../../entities/Tenant";
 
 export const IdentityDataSource = new DataSource({
   type: "postgres",

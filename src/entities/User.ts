@@ -4,11 +4,11 @@ import { BaseEntity } from "./BaseEntity";
 @Entity({ name: "users" })
 export class User extends BaseEntity {
   @Column({ type: "varchar", nullable: false })
-  displayName: string;
+  displayName!: string;
 
   @Column({ type: "varchar", nullable: false })
-  email: string;
+  email!: string;
 
   @Column({ type: "varchar", nullable: false })
-  password: string;
+  password!: string;
 }

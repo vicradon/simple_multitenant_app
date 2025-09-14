@@ -1,6 +1,7 @@
 import express from "express";
-import AuthService from "../services/Auth.js";
-import MedicalRecordService from "../services/MedicalRecord.js";
+import authService from "../services/Auth";
+import MedicalRecordService from "../services/MedicalRecord";
+import { AuthRequest } from "../types/express";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await AuthService.register(email, password);
+    const result = await authService.register(email, password);
     res.json(result);
   } catch (err) {
     const msg = (err as unknown as Error).message;
@@ -21,7 +22,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await AuthService.login(email, password);
+    const result = await authService.login(email, password);
     res.json(result);
   } catch (err) {
     const msg = (err as unknown as Error).message;
@@ -30,8 +31,9 @@ router.post("/login", async (req, res) => {
 });
 
 // Get medical records
-router.get("/records", AuthService.authMiddleware, async (req, res) => {
+router.get("/records", authService.authMiddleware, async (req: AuthRequest, res) => {
   try {
+    if (!req.db) return res.status(500).json({error: "no db"})
     const records = await MedicalRecordService.getRecords(req.db);
     res.json(records);
   } catch (err) {
@@ -41,8 +43,9 @@ router.get("/records", AuthService.authMiddleware, async (req, res) => {
 });
 
 // Create medical record
-router.post("/records", AuthService.authMiddleware, async (req, res) => {
+router.post("/records", authService.authMiddleware, async (req: AuthRequest, res) => {
   try {
+    if (!req.db) return res.status(500).json({error: "no db"})
     const record = await MedicalRecordService.createRecord(req.db, req.body);
     res.json(record);
   } catch (err) {

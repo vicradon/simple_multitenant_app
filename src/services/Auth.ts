@@ -1,10 +1,16 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import env from "../utils/env.js";
-import DbService from "./Database.js";
-import TenantDataSourceManager from "./Datasource/TenantDataSourceManager.js";
-import type { Request, Response } from "express";
-const JWT_SECRET = env.jwt_secret;
+import env from "../utils/env";
+import DbService from "./Database";
+import TenantDataSourceManager from "./Datasource/TenantDataSourceManager";
+import type { NextFunction, Request, Response } from "express";
+import { AuthRequest } from "../types/express";
+const JWT_SECRET = env.jwt_secret || "";
+
+interface JWTPayload {
+  userId: string;
+  tenantId: string;
+}
 
 class AuthService {
   extractDomain(email: string) {
@@ -66,13 +72,13 @@ class AuthService {
     return { token };
   }
 
-  async authMiddleware(req: Request, res: Response, next) {
-    const header = req.headers.authorization;
+  async authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+    const header = req.headers["authorization"];
     if (!header) return res.status(401).json({ error: "Missing token" });
 
     try {
       const token = header.split(" ")[1];
-      const payload = jwt.verify(token, JWT_SECRET);
+      const payload = jwt.verify(token, JWT_SECRET) as JWTPayload;
       req.user = payload;
       req.db = await TenantDataSourceManager.getDataSource(payload.tenantId);
       next();
