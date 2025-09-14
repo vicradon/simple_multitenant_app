@@ -6,6 +6,20 @@ An application supporting "multiple dbs, one app" style of multi-tenancy.
 
 ![DB Diagram](./docs/db_diagram.png)
 
+### Getting the DB up
+
+Run the command below to run the three dbs
+```sh
+docker compose up
+```
+
+You can then use these env values based on the docker
+
+```sh
+DB_URL_IDENTITY=postgresql://hospital_identity_db:hospital_identity_db@localhost:5432/hospital_identity_db
+DB_URL_HOSPITAL_A=postgresql://hospital_a:hospital_a@localhost:5433/hospital_a
+DB_URL_HOSPITAL_B=postgresql://hospital_b:hospital_b@localhost:5434/hospital_b
+```
 
 ## Running
 
