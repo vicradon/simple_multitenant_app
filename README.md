@@ -2,8 +2,6 @@
 
 An application supporting "multiple dbs, one app" style of multi-tenancy.
 
-View the TypeScript version [here](https://github.com/vicradon/simple_multitenant_app/tree/typeorm_version). 
-
 ## Database Diagram
 
 ![DB Diagram](./docs/db_diagram.png)
